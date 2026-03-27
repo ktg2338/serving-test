@@ -2,13 +2,18 @@
 Model Loader - Apple M5 MPS 최적화
 - 모델: distilbert-base-uncased-finetuned-sst-2-english (~260MB)
   16GB RAM에서 여유롭게 동작하는 경량 감성분석 모델
+- LoRA 파인튜닝 모델이 있으면 자동으로 로드
 - Device 우선순위: MPS(Metal) > CPU
 """
 
+from pathlib import Path
+
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from peft import PeftModel
 
 MODEL_NAME = "distilbert-base-uncased-finetuned-sst-2-english"
+LORA_PATH = Path(__file__).parent.parent / "models" / "lora-finetuned" / "final"
 
 
 def get_device() -> torch.device:
@@ -32,14 +37,23 @@ class ModelManager:
         print(f"[ModelManager] Device: {self.device}")
 
         self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        self.model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+        base_model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+
+        # LoRA 어댑터가 있으면 합쳐서 로드
+        if LORA_PATH.exists():
+            print(f"[ModelManager] LoRA 어댑터 로드: {LORA_PATH}")
+            self.model = PeftModel.from_pretrained(base_model, str(LORA_PATH))
+        else:
+            print("[ModelManager] LoRA 없음 → 원본 모델 사용")
+            self.model = base_model
 
         # 추론 모드 전환 + 디바이스 배치
         self.model.eval()
         self.model.to(self.device)
 
-        # 라벨 매핑
-        self.id2label = self.model.config.id2label
+        # 라벨 매핑 (PeftModel은 base_model 안에 config가 있음)
+        config = getattr(self.model, "config", None) or self.model.base_model.config
+        self.id2label = config.id2label
 
         # 워밍업 추론 (MPS 첫 호출 지연 방지)
         self._warmup()

@@ -1,0 +1,59 @@
+{
+  "best_global_step": 4,
+  "best_metric": 0.75,
+  "best_model_checkpoint": "/Users/ktg2338/projects/personal/serving-test/models/lora-finetuned/checkpoint-4",
+  "epoch": 2.0,
+  "eval_steps": 500,
+  "global_step": 8,
+  "is_hyper_param_search": false,
+  "is_local_process_zero": true,
+  "is_world_process_zero": true,
+  "log_history": [
+    {
+      "epoch": 1.0,
+      "eval_accuracy": 0.75,
+      "eval_loss": 0.6576566696166992,
+      "eval_runtime": 0.1675,
+      "eval_samples_per_second": 47.77,
+      "eval_steps_per_second": 5.971,
+      "step": 4
+    },
+    {
+      "epoch": 1.25,
+      "grad_norm": 2.223100185394287,
+      "learning_rate": 0.00016,
+      "loss": 0.8499152183532714,
+      "step": 5
+    },
+    {
+      "epoch": 2.0,
+      "eval_accuracy": 0.5,
+      "eval_loss": 0.7708457708358765,
+      "eval_runtime": 0.0425,
+      "eval_samples_per_second": 188.129,
+      "eval_steps_per_second": 23.516,
+      "step": 8
+    }
+  ],
+  "logging_steps": 5,
+  "max_steps": 20,
+  "num_input_tokens_seen": 0,
+  "num_train_epochs": 5,
+  "save_steps": 500,
+  "stateful_callbacks": {
+    "TrainerControl": {
+      "args": {
+        "should_epoch_stop": false,
+        "should_evaluate": false,
+        "should_log": false,
+        "should_save": true,
+        "should_training_stop": false
+      },
+      "attributes": {}
+    }
+  },
+  "total_flos": 2021091102720.0,
+  "train_batch_size": 8,
+  "trial_name": null,
+  "trial_params": null
+}
